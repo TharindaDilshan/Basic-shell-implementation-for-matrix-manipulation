@@ -102,6 +102,34 @@ void Matrix::displayMatrix(){
 	}
 }
 
+void Matrix::matrixAddition(Matrix m2){
+	if(rows == m2.rows && columns == m2.columns){
+		for(int i=0;i<rows;i++){
+			for(int j=0;j<columns;j++){
+				cout<<matrix[i][j] + m2.matrix[i][j] <<"\t";
+			}
+			cout<<endl;
+		}
+	}else{
+		cout<<"Failed to perform addition: Type Mismatch"<<endl;
+		return;
+	}
+}
+
+void Matrix::matrixSubtraction(Matrix m2){
+	if(rows == m2.rows && columns == m2.columns){
+		for(int i=0;i<rows;i++){
+			for(int j=0;j<columns;j++){
+				cout<<matrix[i][j] - m2.matrix[i][j] <<"\t";
+			}
+			cout<<endl;
+		}
+	}else{
+		cout<<"Failed to perform substraction: Type Mismatch"<<endl;
+		return;
+	}
+}
+
 string trim(const string& str)
 {
     size_t first = str.find_first_not_of(' ');
@@ -114,9 +142,11 @@ string trim(const string& str)
 }
 
 int main(){
-	int n, validName, updated;
+	int n, validName, updated, operandCount,viewValue,v;
 	int arraySize = 10;
-	string variableName, variableValue;
+	string variableName, variableValue, left, right;
+	Matrix leftOperand, rightOperand;
+	
 	Matrix matrixArray[arraySize];
 	int arrayRef = 0;
 	string inputStr;
@@ -124,11 +154,27 @@ int main(){
 	while(true){
 		cout<<">>";
 		getline(cin, inputStr);
-
+		
+		string check = inputStr;
+		transform(check.begin(), check.end(), check.begin(), ::toupper);
+		if( check == "EXIT"){
+			break;
+		}
+		if(check == ""){
+			continue;
+		}
+		viewValue = 1;
+		int brk = 0;
 		for(int i=0;i<inputStr.length();i++){
-			if(inputStr[i]=='=' || inputStr[i]=='+' || inputStr[i]=='-' || inputStr[i]=='*' || inputStr[i]=='/'){
+			if(inputStr[i]=='=' || inputStr[i]=='+' || inputStr[i]=='-' || inputStr[i]=='*' || inputStr[i]=='/' || inputStr[i]=='.'){
+				viewValue = 0;
 				switch(inputStr[i]){
 					case '=':
+						if(inputStr.find('+') != string::npos || inputStr.find('*') != string::npos){
+							cout<<"Complex assignments not supported"<<endl;
+							brk = 1;
+							break;
+						}
 						n = inputStr.find('=');
 						variableName = inputStr.substr(0,n);
 						variableName = trim(variableName);
@@ -146,7 +192,6 @@ int main(){
 						
 						if(validName){
 							variableValue = trim(inputStr.substr(n+1));
-
 							if(variableValue.length() > 0){
 								if(variableValue[0] == '[' && variableValue[variableValue.length() - 1] == ']'){
 									// Matrix
@@ -155,7 +200,7 @@ int main(){
 									for(int j=0;j<arraySize;j++){
 										if(matrixArray[j].getName() == variableName){
 											matrixArray[j].constructMatrix(variableName, variableValue.substr(1,variableValue.length()-2));
-											matrixArray[j].displayMatrix();
+											// matrixArray[j].displayMatrix();
 											updated = 1;
 											break;
 										}
@@ -164,7 +209,7 @@ int main(){
 										for(int j=0;j<arraySize;j++){
 											if(matrixArray[j].getName() == ""){
 												matrixArray[j].constructMatrix(variableName, variableValue.substr(1,variableValue.length()-2));
-												matrixArray[j].displayMatrix();
+												// matrixArray[j].displayMatrix();
 												break;
 											}
 										}
@@ -172,8 +217,27 @@ int main(){
 
 								}else if(variableValue[0] == '[' || variableValue[variableValue.length() - 1] == ']'){
 									cout<<"Invalid Matrix syntax"<<endl;
+									break;
 								}else{
 									// Number
+									updated = 0;
+									for(int j=0;j<arraySize;j++){
+										if(matrixArray[j].getName() == variableName){
+											matrixArray[j].constructMatrix(variableName, variableValue);
+											// matrixArray[j].displayMatrix();
+											updated = 1;
+											break;
+										}
+									}
+									if(!updated){
+										for(int j=0;j<arraySize;j++){
+											if(matrixArray[j].getName() == ""){
+												matrixArray[j].constructMatrix(variableName, variableValue);
+												// matrixArray[j].displayMatrix();
+												break;
+											}
+										}
+									}
 								}
 							}else{
 								cout<<"Invalid Assignment"<<endl;
@@ -181,6 +245,7 @@ int main(){
 						}else{
 							cout<<"Invalid Variable Name"<<endl;
 						}
+						break;
 
 					// case '+':
 
