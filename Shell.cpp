@@ -1,6 +1,7 @@
 #include<iostream>
 #include <string>
 #include<sstream>
+#include<bits/stdc++.h>
 
 using namespace std;
 
@@ -16,8 +17,12 @@ class Matrix{
 	public:
 		Matrix();
 		string getName();
+		int getMatrix();
 		void constructMatrix(string, string);
-		void updateMatrix(string);
+		void matrixAddition(Matrix);
+		void matrixSubtraction(Matrix);
+		void matrixMultiplication(Matrix);
+		void elementwiseMatrixMultiplication(Matrix);
 		void displayMatrix();
 };
 
@@ -31,15 +36,24 @@ string Matrix::getName(){
 	return name;
 }
 
+int Matrix::getMatrix(){
+	return **matrix;
+}
+
 void Matrix::constructMatrix(string variableName, string inputString){
 	name = variableName;
 	int k = 0;
-	int i = 0;
-	int j = 0;
-	// int l = 0;
+	int i = 0;	//rows
+	int j = 0;  //columns
+	int rowChecker = 0;
+
 	while(k < inputString.length()){
 
 		if(inputString[k] == ';'){
+			if(i != 0 && rowChecker != j){
+				cout<<"Error creating matrix: Dimesion mismatch"<<endl;
+				return;
+			}
 			i++;
 			j = 0;
 			k++;
@@ -48,27 +62,34 @@ void Matrix::constructMatrix(string variableName, string inputString){
 		}
 		else{
 			string x = "";
-			while(inputString[k] != ' ' && inputString[k] != ',' && inputString[k] != ';'){
+			while(inputString[k] != ' ' && inputString[k] != ',' && inputString[k] != ';' && inputString[k] != '\0'){
 				x += inputString[k];
-				// l++;
 				k++;
+			}
+			for(int z=0;z<x.length();z++){
+				if(!isdigit(x[z]) && x[z]!='.' ){
+					cout<<"Initialization Error: Invalid element type"<<endl;;
+					return;
+				}
 			}
 			stringstream num(x);
 			num >> matrix[i][j];
 			j++;
+
+			if(i == 0){
+				rowChecker++;
+			}
+			if(i != 0 && k == inputString.length()){
+				if(j != rowChecker){
+					cout<<"Error creating matrix: Dimesion mismatch"<<endl;
+					return;
+				}	
+			}
 		}
 	}
 	rows = i+1;
 	columns = j;
-}
-
-void Matrix::updateMatrix(string matrixString){
-	
-//	for(int i=0;i<rows;i++){
-//		for(int j=0;j<columns;j++){
-//			matrix[i][j] = 0;
-//		}
-//	}
+	displayMatrix();
 }
 
 void Matrix::displayMatrix(){
