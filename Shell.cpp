@@ -130,6 +130,47 @@ void Matrix::matrixSubtraction(Matrix m2){
 	}
 }
 
+void Matrix::matrixMultiplication(Matrix m2){
+	int sum;
+	if(rows == 1 && columns == 1 && m2.rows == 1 && m2.columns == 1){
+		cout<<matrix[0][0] * m2.matrix[0][0]<<endl;
+	}
+	else if(columns == m2.rows){
+		for(int i = 0; i < rows; i++){
+			for(int j = 0; j < m2.columns; j++){
+				sum = 0;
+				for(int k = 0; k < columns; k++){
+					sum += matrix[i][k] * m2.matrix[k][j];
+				}
+				cout<<sum<<"\t";
+			}
+			cout<<endl;
+		}       
+	}
+	else if((rows == 1 && columns == 1) || (m2.rows == 1 && m2.columns == 1)){
+		if(rows == 1 && columns == 1){
+			for(int i=0;i<m2.rows;i++){
+				for(int j=0;j<m2.columns;j++){
+					cout<< matrix[0][0] * m2.matrix[i][j]<<"\t"; 
+				}
+				cout<<endl;
+			}
+		}
+		else if(m2.rows == 1 && m2.columns == 1){
+			for(int i=0;i<rows;i++){
+				for(int j=0;j<columns;j++){
+					cout<< m2.matrix[0][0] * matrix[i][j]<<"\t"; 
+				}
+				cout<<endl;
+			}
+		}
+	}
+	else{
+		cout<<"Failed to perform multiplication: Dimension Mismatch"<<endl;
+		return;
+	}
+}
+
 string trim(const string& str)
 {
     size_t first = str.find_first_not_of(' ');
@@ -247,9 +288,78 @@ int main(){
 						}
 						break;
 
-					// case '+':
+					case '+':
+						n = inputStr.find('+');
+						left = trim(inputStr.substr(0,n));
+						right = trim(inputStr.substr(n+1));
+						
+						if(numeric(left) && numeric(right)){
+							int leftInt,rightInt;
+							stringstream q(left);
+							stringstream r(right);
+							
+							q>>leftInt;
+							r>>rightInt;
+							cout<<leftInt+rightInt<<endl;
+							break;
+						}
+						v = 0;
+						for(int j=0;j<arraySize;j++){
+							if(matrixArray[j].getName() == left){
+								leftOperand = matrixArray[j];
+								v++;
+							}
+							if(matrixArray[j].getName() == right){
+								rightOperand = matrixArray[j];
+								v++;
+							}
+						}	
+						if(leftOperand.getName() != "" && rightOperand.getName() != "" && v == 2){
+							leftOperand.matrixAddition(rightOperand);
+						}
+						else{
+							cout<<"Invalid Variable"<<endl;
+							brk = 1;
+						}	
+						break;	
 
-					// case '-':
+					case '-':
+						if(inputStr.find('=') != string::npos){
+							break;
+						}else{
+							n = inputStr.find('-');
+							left = trim(inputStr.substr(0,n));
+							right = trim(inputStr.substr(n+1));
+							
+							if(numeric(left) && numeric(right)){
+								int leftInt,rightInt;
+								stringstream q(left);
+								stringstream r(right);
+								
+								q>>leftInt;
+								r>>rightInt;
+								cout<<leftInt-rightInt<<endl;
+								break;
+							}
+							v = 0;
+							for(int j=0;j<arraySize;j++){
+								if(matrixArray[j].getName() == left){
+									leftOperand = matrixArray[j];
+									v++;
+								}
+								if(matrixArray[j].getName() == right){
+									rightOperand = matrixArray[j];
+									v++;
+								}
+							}	
+							if(leftOperand.getName() != "" && rightOperand.getName() != ""){
+								leftOperand.matrixSubtraction(rightOperand);
+							}else{
+								cout<<"Invalid Variable"<<endl;
+								brk = 1;
+							}
+						}	
+						break;
 
 					// case '*':
 
