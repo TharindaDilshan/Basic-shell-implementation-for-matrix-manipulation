@@ -194,8 +194,6 @@ int main(){
 	cout<<"Welcome to Universal Complex Scripting Calculator by UCSC, Sri Lanka. Version: 1.0 "<<endl;
 	while(true){
 		cout<<">>";
-		getline(cin, inputStr);
-		
 		string check = inputStr;
 		transform(check.begin(), check.end(), check.begin(), ::toupper);
 		if( check == "EXIT"){
@@ -240,7 +238,6 @@ int main(){
 									
 									for(int j=0;j<arraySize;j++){
 										if(matrixArray[j].getName() == variableName){
-											matrixArray[j].constructMatrix(variableName, variableValue.substr(1,variableValue.length()-2));
 											// matrixArray[j].displayMatrix();
 											updated = 1;
 											break;
@@ -249,7 +246,6 @@ int main(){
 									if(!updated){
 										for(int j=0;j<arraySize;j++){
 											if(matrixArray[j].getName() == ""){
-												matrixArray[j].constructMatrix(variableName, variableValue.substr(1,variableValue.length()-2));
 												// matrixArray[j].displayMatrix();
 												break;
 											}
@@ -361,7 +357,42 @@ int main(){
 						}	
 						break;
 
-					// case '*':
+					case '*':
+						if(inputStr.find('.') != string::npos){
+							break;
+						}
+					 	n = inputStr.find('*');
+						left = trim(inputStr.substr(0,n));
+						right = trim(inputStr.substr(n+1));
+						
+						if(numeric(left) && numeric(right)){
+							int leftInt,rightInt;
+							stringstream q(left);
+							stringstream r(right);
+							
+							q>>leftInt;
+							r>>rightInt;
+							cout<<leftInt*rightInt<<endl;
+							break;
+						}
+						v = 0;
+						for(int j=0;j<arraySize;j++){
+							if(matrixArray[j].getName() == left){
+								leftOperand = matrixArray[j];
+								v++;
+							}
+							if(matrixArray[j].getName() == right){
+								rightOperand = matrixArray[j];
+								v++;
+							}
+						}	
+						if(leftOperand.getName() != "" && rightOperand.getName() != "" && v == 2){
+							leftOperand.matrixMultiplication(rightOperand);
+						}else{
+							cout<<"Invalid Variable"<<endl;
+							brk = 1;
+						}
+						break;
 
 					// case '/':
 
