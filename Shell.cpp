@@ -171,6 +171,39 @@ void Matrix::matrixMultiplication(Matrix m2){
 	}
 }
 
+void Matrix::elementwiseMatrixMultiplication(Matrix m2){
+	if((rows == 1 && columns == 1) || (m2.rows == 1 && m2.columns == 1)){
+		if(rows == 1 && columns == 1){
+			for(int i=0;i<m2.rows;i++){
+				for(int j=0;j<m2.columns;j++){
+					cout<< matrix[0][0] * m2.matrix[i][j]<<"\t"; 
+				}
+				cout<<endl;
+			}
+		}
+		else if(m2.rows == 1 && m2.columns == 1){
+			for(int i=0;i<rows;i++){
+				for(int j=0;j<columns;j++){
+					cout<< m2.matrix[0][0] * matrix[i][j]<<"\t"; 
+				}
+				cout<<endl;
+			}
+		}
+	}else if(rows == m2.rows && columns == m2.columns){
+		
+		for(int i=0;i<rows;i++){
+			for(int j=0;j<columns;j++){
+				cout<< m2.matrix[i][j] * matrix[i][j]<<"\t"; 
+			}
+			cout<<endl;
+		}
+	}
+	else{
+		cout<<"Failed to perform elementwise multiplication: Dimension Mismatch"<<endl;
+		return;
+	}
+}
+
 string trim(const string& str)
 {
     size_t first = str.find_first_not_of(' ');
@@ -180,6 +213,15 @@ string trim(const string& str)
     }
     size_t last = str.find_last_not_of(' ');
     return str.substr(first, (last - first + 1));
+}
+
+bool numeric(string n){
+	for(int i=0;i<n.length();i++){
+		if(!isdigit(n[i]) && n[i]!='.'){
+			return false;
+		}
+	}
+	return true;
 }
 
 int main(){
@@ -194,6 +236,8 @@ int main(){
 	cout<<"Welcome to Universal Complex Scripting Calculator by UCSC, Sri Lanka. Version: 1.0 "<<endl;
 	while(true){
 		cout<<">>";
+		getline(cin, inputStr);
+
 		string check = inputStr;
 		transform(check.begin(), check.end(), check.begin(), ::toupper);
 		if( check == "EXIT"){
@@ -238,6 +282,7 @@ int main(){
 									
 									for(int j=0;j<arraySize;j++){
 										if(matrixArray[j].getName() == variableName){
+											matrixArray[j].constructMatrix(variableName, variableValue.substr(1,variableValue.length()-2));
 											// matrixArray[j].displayMatrix();
 											updated = 1;
 											break;
@@ -246,6 +291,7 @@ int main(){
 									if(!updated){
 										for(int j=0;j<arraySize;j++){
 											if(matrixArray[j].getName() == ""){
+												matrixArray[j].constructMatrix(variableName, variableValue.substr(1,variableValue.length()-2));
 												// matrixArray[j].displayMatrix();
 												break;
 											}
@@ -394,18 +440,57 @@ int main(){
 						}
 						break;
 
-					// case '/':
+					case '.':
+						if(inputStr.find('=') != string::npos){
+							break;
+						}
+						n = inputStr.find('*');
+						if(inputStr[n-1] == '.'){
+							left = trim(inputStr.substr(0,n-1));
+							right = trim(inputStr.substr(n+1));
+							
+							v = 0;
+							for(int j=0;j<arraySize;j++){
+								if(matrixArray[j].getName() == left){
+									leftOperand = matrixArray[j];
+									v++;
+								}
+								if(matrixArray[j].getName() == right){
+									rightOperand = matrixArray[j];
+									v++;
+								}
+							}	
+							if(leftOperand.getName() != "" && rightOperand.getName() != "" && v == 2){
+								leftOperand.elementwiseMatrixMultiplication(rightOperand);
+							}else{
+								cout<<"Invalid Variable"<<endl;
+								break;
+							}
+						}else{
+							cout<<"Invalid Syntax"<<endl;
+						}
+						break;
 
-					// default:
-
+					default:
+						cout<<"Invalid Expression"<<endl;
 				}
 			}
+			if(brk){
+				break;
+			}
 		}
-	for(int j=0;j<arraySize;j++){
-		if(matrixArray[j].getName() != ""){
-			cout<<matrixArray[j].getName();
-		}
-	}		
+		if(viewValue){
+			int valid = 0;
+			for(int j=0;j<arraySize;j++){
+				if(matrixArray[j].getName() == inputStr){
+					matrixArray[j].displayMatrix();
+					valid = 1;
+				}
+			}
+			if(!valid){
+				cout<<"Value not defined"<<endl;
+			}
+		}		
 				
 	}
 	
